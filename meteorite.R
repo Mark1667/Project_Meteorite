@@ -33,5 +33,5 @@ meteorite_cleans %>%
              na_longitude = sum(is.na(longitude)))
   
 meteorite_cleans %>% 
-  filter
+  filterdsad
 
