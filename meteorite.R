@@ -44,3 +44,10 @@ meteorite_cleans_numeric <- meteorite_cleans%>%
   meteorite_cleans_numeric %>% 
     summarise(across(.fns = ~sum(is.na(.x))))
   
+  
+  meteorite_greater_than_999 <- meteorite_cleans_numeric%>% 
+    filter(mass_g >= 1000) %>% 
+    arrange((desc(year)))
+  
+  view(meteorite_greater_than_999)
+  
