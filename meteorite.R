@@ -1,9 +1,9 @@
 library(tidyverse)
 library(janitor)
+library(assertr)
 
 
-
-meteorite_data <-read_csv("meteorite_landings.csv")
+meteorite_data <-read_csv("Projects/meteorite/meteorite_landings.csv")
 
 
 head(meteorite_data)
@@ -11,22 +11,6 @@ head(meteorite_data)
 stopifnot(
   names(meteorite_data) %in% c("id", "name", "mass (g)", "fall", "year", "GeoLocation")
 )
-
-
-Lat_long_check <- function(meteorite_data check){
-  
-      # put in the checks on the data first 
-  meteorite_data_check %>% 
-      verify(latitude >= -90 & latitude <=90) %>% 
-      verify(longitude >= -180 & longitude <= 180)
-    
-  returnValue()
-  
-}
-
-
-
-
 
 meteorite_clean <- janitor::clean_names(meteorite_data)
 
@@ -58,12 +42,23 @@ meteorite_cleans_numeric <- meteorite_cleans%>%
     latitude  = as.numeric(latitude))
 
 
+
   meteorite_cleans_numeric %>% 
   summarise(across(.fns = ~sum(is.na(.x))))
 
   meteorite_cleans_numeric <- meteorite_cleans_numeric %>% 
   replace(is.na(.), 0)
  
+  
+ #------------------------------------------------------------
+  # put in the checks on the data first 
+  meteorite_cleans_numeric %>% 
+    verify(latitude >= -90 & latitude <=90) %>% 
+    verify(longitude >= -180 & longitude <= 180)
+  
+  
+  
+  
   
   meteorite_cleans_numeric %>% 
     summarise(across(.fns = ~sum(is.na(.x))))
@@ -75,9 +70,4 @@ meteorite_cleans_numeric <- meteorite_cleans%>%
   
   view(meteorite_greater_than_999)
   
-  
-  install.packages("assertr")
-  
-  
-  library(assertr)
   
