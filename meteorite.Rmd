@@ -1,16 +1,107 @@
----
-title: "R Notebook"
-output: html_notebook
----
-
 ```{r}
 library(tidyverse)
-  ```
+library(janitor)
+library(assertr)
+
+# Load data
+meteorite_data <-read_csv("Projects/meteorite/meteorite_landings.csv")
+
+
+head(meteorite_data)
+
+
+# Check master file variable names have not changed 
+stopifnot(
+  names(meteorite_data) %in% c("id", "name", "mass (g)", "fall", "year", "GeoLocation")
+)
+
+#Clean all variable names to preferred format
+
+meteorite_clean <- janitor::clean_names(meteorite_data)
+
+meteorite_clean
+
+#Split GeoLocation variable into two separate variables
+
+meteorite_clean <- meteorite_clean %>%
+  separate(
+  col = geo_location,
+  into = c("latitude", "longitude"),
+  sep = "\\,"
+  )
+
+meteorite_clean
+
+
+# Remove all unwanted character data and set fields to numeric
+
+meteorite_cleans <- meteorite_clean %>%
+  mutate(
+  longitude = str_remove(longitude, pattern = "[)]")) %>% 
+  mutate(
+    latitude  = str_remove(latitude, pattern = "[(]"))
+
+meteorite_cleans_numeric <- meteorite_cleans%>%
+  mutate(
+    longitude = as.numeric(longitude)) %>% 
+  mutate(
+    latitude  = as.numeric(latitude))
+
+
+  meteorite_cleans_numeric %>% 
+  summarise(across(.fns = ~sum(is.na(.x))))
+
+  #replace any missing data from data by converting to 0 (zero)
+  
+  meteorite_cleans_numeric <- meteorite_cleans_numeric %>% 
+  replace(is.na(.), 0)
+  #replace(longitude < -180 | > 180, 0)
+  #replace(latitude < -90 | > 90, 0)
+ 
+  
+
+  #check validity of the GeoLocation data for erroneous results
+  meteorite_cleans_numeric %>% 
+    verify(latitude >= -90 & latitude <=90) %>% 
+    verify(longitude >= -180 & longitude <= 180)
+  
+  
+  meteorite_cleans_numeric %>% 
+    summarise(across(.fns = ~sum(is.na(.x))))
+  
+  #filter to only show meteorites greater than 1000g in weight
+  
+  meteorite_greater_than_999 <- meteorite_cleans_numeric%>% 
+    filter(mass_g >= 1000) %>% 
+    arrange((desc(year)))
+  
+  view(meteorite_greater_than_999)
+```
+
+```{r}
+#show data set of 10 heaviest meteorites
+
+top_ten <- meteorite_cleans_numeric %>% 
+  arrange(desc(mass_g))%>%
+head (10)
+
 ```
 
 
-
 ```{r}
-meteorite_data <-read_csv("meteorite_landings.csv")
+
+#show average weight of meteorites by method of recording i.e. found or falling 
+meteorite_avge <- meteorite_cleans_numeric %>% 
+  group_by(fall) %>% 
+  summarise(ave_mass = mean(mass_g))
+
+meteorite_avge
+```
+```{r}
+meteorite_qty <- meteorite_cleans_numeric %>% 
+  group_by (year) %>% 
+  summarise(count = n()) %>% 
+  arrange(desc(count))
+
 ```
 

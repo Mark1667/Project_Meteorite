@@ -50,7 +50,7 @@ meteorite_cleans_numeric <- meteorite_cleans%>%
   replace(is.na(.), 0)
  
   
- #------------------------------------------------------------
+
   # put in the checks on the data first 
   meteorite_cleans_numeric %>% 
     verify(latitude >= -90 & latitude <=90) %>% 
@@ -69,5 +69,4 @@ meteorite_cleans_numeric <- meteorite_cleans%>%
     arrange((desc(year)))
   
   view(meteorite_greater_than_999)
-  
   
