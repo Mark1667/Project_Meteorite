@@ -52,9 +52,9 @@ meteorite_cleans_numeric <- meteorite_cleans%>%
   
 
   # put in the checks on the data first 
-  meteorite_cleans_numeric %>% 
-    verify(latitude >= -90 & latitude <=90) %>% 
-    verify(longitude >= -180 & longitude <= 180)
+  #meteorite_cleans_numeric %>% 
+  #  verify(latitude >= -90 & latitude <=90) %>% 
+  #  verify(longitude >= -180 & longitude <= 180)
   
   
   
@@ -70,3 +70,9 @@ meteorite_cleans_numeric <- meteorite_cleans%>%
   
   view(meteorite_greater_than_999)
   
+  write_csv(file = "meteorite_landings_clean.csv")
+  
+  
+  meteorite_greater_than_999 %>% 
+    filter(latitude >= 180) %>% 
+       arrange((desc(latitude)))
