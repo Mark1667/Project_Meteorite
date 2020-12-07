@@ -4,7 +4,7 @@ library(janitor)
 library(assertr)
 
 # Load data
-meteorite_data <-read_csv("Projects/meteorite/meteorite_landings.csv")
+meteorite_data <-read_csv("meteorite_landings.csv")
 
 
 head(meteorite_data)
@@ -98,10 +98,26 @@ meteorite_avge <- meteorite_cleans_numeric %>%
 meteorite_avge
 ```
 ```{r}
-meteorite_qty <- meteorite_cleans_numeric %>% 
+```
+
+
+
+
+```{r}
+meteorite_qty<- meteorite_cleans_numeric %>% 
   group_by (year) %>% 
   summarise(count = n()) %>% 
-  arrange(desc(count))
+  arrange(desc(year))
+meteorite_qty
+```
+
+
+```{r}
+meteorite_qty %>% 
+  mutate(
+    change_in_count = lag(count),
+    count_change = count - change_in_count
+  )
 
 ```
 
